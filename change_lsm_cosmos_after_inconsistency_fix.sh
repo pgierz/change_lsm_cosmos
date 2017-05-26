@@ -18,15 +18,15 @@ reference_dir="/home/ace/pgierz/reference_stuff/"
 cdo -chname,SLF,SLM -gtc,0.5 ${expid}_SLF_after_fix.nc ${expid}_SLM_after_fix.nc
 
 # Replace the SLF and SLM in T31GR30_jan_surf_dles_nbs.nc
-cdo -replace T31GR30_jan_surf_replaced_dles_nbs.nc ${expid}_SLF.nc tmp_T31GR30_jan_surf_replaced_dles_nbs.nc
-cdo -replace tmp_T31GR30_jan_surf_replaced_dles_nbs.nc ${expid}_SLM.nc T31GR30_jan_surf_replaced_dles_nbs_replaced.nc
+cdo -replace T31GR30_jan_surf_replaced_dles_nbs.nc ${expid}_SLF_after_fix.nc tmp_T31GR30_jan_surf_replaced_dles_nbs.nc
+cdo -replace tmp_T31GR30_jan_surf_replaced_dles_nbs.nc ${expid}_SLM_after_fix.nc T31GR30_jan_surf_replaced_dles_nbs_replaced.nc
 
 # Do the cdo change_e5slm stuff on each echam5 input file
 FILE_REPLACE_LIST="T31GR30_jan_surf_replaced_dles_nbs_replaced.nc T31GR30_VGRATCLIM_dles_nbs.nc T31GR30_VLTCLIM_dles_nbs.nc"
 FINISHED_FILE_LIST=""
 for file in $FILE_REPLACE_LIST
 do
-    cdo change_e5slm,${expid}_SLM.nc "$file" "${file%.*}_after_fix.nc"
+    cdo change_e5slm,${expid}_SLM_after_fix.nc "$file" "${file%.*}_after_fix.nc"
     FINISHED_FILE_LIST="${FINISHED_FILE_LIST} ${file%.*}_after_fix.nc"
 done
 
