@@ -50,8 +50,12 @@ cp ${reference_dir}/T31GR30_jan_surf.nc .
 cp ${reference_dir}/T31GR30_VGRATCLIM.nc .
 cp ${reference_dir}/T31GR30_VLTCLIM.nc .
 
+# Replace the SLF and SLM in T31GR30_jan_surf.nc
+cdo -replace T31GR30_jan_surf.nc ${expid}_SLF.nc tmp_T31GR30_jan_surf.nc
+cdo -replace tmp_T31GR30_jan_surf.nc ${expid}_SLM.nc T31GR30_jan_surf_replaced.nc
+
 # Do the cdo change_e5slm stuff on each echam5 input file
-FILE_REPLACE_LIST="T31GR30_jan_surf.nc T31GR30_VGRATCLIM.nc T31GR30_VLTCLIM.nc"
+FILE_REPLACE_LIST="T31GR30_jan_surf_replaced.nc T31GR30_VGRATCLIM.nc T31GR30_VLTCLIM.nc"
 FINISHED_FILE_LIST=""
 for file in $FILE_REPLACE_LIST
 do
@@ -66,6 +70,21 @@ scp $FINISHED_FILE_LIST pgierz@rayl4:/home/csys/pgierz/Research/For_Ruediger/new
 ssh pgierz@rayl4 'cd /home/csys/pgierz/Research/For_Ruediger/new_jsbach/; ./jsbach_init_file_pgierz.ksh'
 scp pgierz@rayl4:/home/csys/pgierz/Research/For_Ruediger/new_jsbach/jsbach_T31_GR30_8tiles_1992.nc jsbach_T31_GR30_8tiles_dles_nbs.nc
 
+cp ${FINISHED_FILE_LIST} /ace/user/pgierz/cosmos-aso-wiso/${expid}/input/echam5
+cp jsbach_T31_GR30_8tiles_dles_nbs.nc /ace/user/pgierz/cosmos-aso-wiso/${expid}/input/jsbach
+
+cp ${expid}.run.original /ace/user/pgierz/cosmos-aso-wiso/${expid}/scripts/${expid}.run
+cd /ace/user/pgierz/cosmos-aso-wiso/${expid}/scripts
+qsub ${expid}.run
+cd -
 
 # Clean up:
 rm -v tmp_*
+
+# Print a message about atmout inconsistency and what to do next
+echo "The job that was just submitted will fail. Check the atmout in: "
+echo ""
+echo "/ace/user/pgierz/cosmos-aso-wiso/${expid}/work/atmout"
+echo ""
+echo "For slf,alake,tsw inconsistencies! If they appear, apply the fix "
+echo "suggested by cstepanek and cpurcell"
