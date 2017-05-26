@@ -1,0 +1,45 @@
+  955  mkdir old_ncfiles
+  956  ls *nc
+  957  mv *nc old_ncfiles/
+  958  ls
+  959  cdo -f nc -sellevel,6 -selvar,3 LIG130_dles_nbs_mpiom_08000101_08000131.grb lsm_mpiomgrid.nc
+  960  cdo -f nc -sellevel,6 -selcode,3 LIG130_dles_nbs_mpiom_08000101_08000131.grb lsm_mpiomgrid.nc
+  961  ncview lsm_mpiomgrid.nc 
+  962  cdo -setmisstoc,1 -setrtoc,-100,100,0 lsm_mpiomgrid.nc lsm_mpiomgrid_binary_mask.nc
+  963  ncview lsm_mpiomgrid_binary_mask.nc 
+  964  cdo -f nc -remapcon,t31grid -setgrid,/home/ace/pgierz/reference_stuff/GR30s.nc -selindexbox,2,101,1,101 -setgrid,r122x101 lsm_mpiomgrid_binary_mask.nc lsm_t31grid_fractional_mask.nc
+  965  ncview lsm_t31grid_fractional_mask.nc 
+  966  cdo -f nc -remapcon,t31grid -setgrid,/home/ace/pgierz/reference_stuff/GR30s.nc -selindexbox,2,121,1,101 -setgrid,r122x101 lsm_mpiomgrid_binary_mask.nc lsm_t31grid_fractional_mask.nc
+  967  ncview lsm_t31grid_fractional_mask.nc 
+  968  cdo setmisstoc,1 lsm_t31grid_fractional_mask.nc lsm_t31grid_fractional_mask_miss1.nc
+  969  ncview lsm_t31grid_fractional_mask_miss1.nc 
+  970  cdo -chname,var3,SLF lsm_t31grid_fractional_mask_miss1.nc lsm_SLF.nc
+  971  ls
+  972  cdo -chname,SLF,SLM -gtc,0.5 lsm_SLF.nc lsm_SLM.nc
+  973  ncview lsm_SLM.nc 
+  974  cp ~/reference_stuff/T31GR30_jan_surf.nc .
+  975  ls
+  976  cdo -h replace
+  977  cdo replace T31GR30_jan_surf.nc lsm_SLF.nc one.nc
+  978  cdo replace one.nc lsm_SLM.nc final.nc
+  979  ncview final.nc 
+  980  history
+  981  ncview lsm_SLF.nc 
+  982  ls
+  983  ncview final.nc 
+  984  ls
+  985  ncdump -h lsm_SLF.nc 
+  986  ncwa -a time lsm_SLF.nc test.nc
+  987  ncdump -h test.nc 
+  988  ncwa -a time,lev lsm_SLF.nc test.nc
+  989  ncdump -h test.nc 
+  990  ls
+  991  mv test.nc lsm_SLF.nc
+  992  ncwa -a time,lev lsm_SLM.nc test.nc
+  993  mv test.nc lsm_SLM.nc
+  994  ls
+  995  cdo replace T31GR30_jan_surf.nc lsm_SLF.nc one.nc
+  996  cdo replace one.nc lsm_SLM.nc final.nc
+  997  ncview final.nc 
+  998  cdo change_e5slm,lsm_SLM.nc final.nc final_new.nc
+  999  ncview final_new.nc 
